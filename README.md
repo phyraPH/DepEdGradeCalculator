@@ -1,1 +1,1 @@
-# DepEdGradeCalculator
+# DepEdGradeSubjectCalculator
