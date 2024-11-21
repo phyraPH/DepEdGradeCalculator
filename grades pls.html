@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>S.A Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .header {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .yellow-input {
+            background-color: #ffff99;
+        }
+        .calculated {
+            background-color: #e6f2ff;
+        }
+        .button {
+            margin-top: 10px;
+            cursor: pointer;
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        .remove-button {
+            background-color: #f44336;
+            padding: 5px 10px;
+            border: none;
+            color: white;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Subject Average Calculator</h1>
+
+    <h2>Written Works</h2>
+    <button class="button" id="add-written">Add</button>
+    <table id="written-works">
+        <thead>
+            <tr>
+                <th>Maximum Score</th>
+                <th>Score Obtained</th>
+                <th>Percentage</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="number" class="yellow-input" id="written-max-1"></td>
+                <td><input type="number" class="yellow-input" id="written-score-1"></td>
+                <td id="written-percent-1" class="calculated">0%</td>
+                <td><button class="remove-button" onclick="removeWrittenWork(this)">Remove</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Performance Task</h2>
+    <button class="button" id="add-performance">Add</button>
+    <table id="performance-task">
+        <thead>
+            <tr>
+                <th>Maximum Score</th>
+                <th>Score Obtained</th>
+                <th>Percentage</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="number" class="yellow-input" id="performance-max-1"></td>
+                <td><input type="number" class="yellow-input" id="performance-score-1"></td>
+                <td id="performance-percent-1" class="calculated">0%</td>
+                <td><button class="remove-button" onclick="removePerformanceTask(this)">Remove</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Exam</h2>
+    <table id="exam">
+        <thead>
+            <tr>
+                <th>Maximum Score</th>
+                <th>Score Obtained</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="number" class="yellow-input" id="exam-max"></td>
+                <td><input type="number" class="yellow-input" id="exam-score"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Weightings</h2>
+    <p>
+        Written Works: <input type="number" class="yellow-input" id="weight-written" value="35" min="0" max="100">%
+    </p>
+    <p>
+        Performance Task: <input type="number" class="yellow-input" id="weight-performance" value="45" min="0" max="100">%
+    </p>
+    <p>
+        Exam: <input type="number" class="yellow-input" id="weight-exam" value="20" min="0" max="100">%
+    </p>
+
+    <h2>Overall Grade</h2>
+    <p>Written Works: <span id="written-average" class="calculated">0%</span></p>
+    <p>Performance Task: <span id="performance-average" class="calculated">0%</span></p>
+    <p>Exam: <span id="exam-average" class="calculated">0%</span></p>
+    <p>Total Average: <span id="total-average" class="calculated">0%</span></p>
+    <p>Transmuted Grade: <span id="transmuted-grade" class="calculated">0</span></p>
+
+    <script>
+        let writtenCount = 1;
+        let performanceCount = 1;
+
+        function addWrittenWork() {
+            if (writtenCount < 10) {
+                writtenCount++;
+                const tbody = document.querySelector('#written-works tbody');
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td><input type="number" class="yellow-input" id="written-max-${writtenCount}"></td>
+                    <td><input type="number" class="yellow-input" id="written-score-${writtenCount}"></td>
+                    <td id="written-percent-${writtenCount}" class="calculated">0%</td>
+                    <td><button class="remove-button" onclick="removeWrittenWork(this)">Remove</button></td>
+                `;
+                tbody.appendChild(newRow);
+                updateListeners();
+            }
+        }
+
+        function removeWrittenWork(button) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            writtenCount--;
+            calculateGrade(); // Recalculate grades after removing a row
+        }
+
+        function addPerformanceTask() {
+            if (performanceCount < 10) {
+                performanceCount++;
+                const tbody = document.querySelector('#performance-task tbody');
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td><input type="number" class="yellow-input" id="performance-max-${performanceCount}"></td>
+                    <td><input type="number" class="yellow-input" id="performance-score-${performanceCount}"></td>
+                    <td id="performance-percent-${performanceCount}" class="calculated">0%</td>
+                    <td><button class="remove-button" onclick="removePerformanceTask(this)">Remove</button></td>
+                `;
+                tbody.appendChild(newRow);
+                updateListeners();
+            }
+        }
+
+        function removePerformanceTask(button) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            performanceCount--;
+            calculateGrade(); // Recalculate grades after removing a row
+        }
+
+        function updateListeners() {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => {
+                input.removeEventListener('input', calculateGrade);
+                input.addEventListener('input', calculateGrade);
+            });
+        }
+
+        function calculateGrade() {
+            // Calculate Written Works average
+            let writtenTotal = 0, writtenMaxTotal = 0;
+            for (let i = 1; i <= writtenCount; i++) {
+                const max = document.getElementById(`written-max-${i}`).value;
+                const score = document.getElementById(`written-score-${i}`).value;
+                if (max && score) {
+                    const percent = (score / max * 100).toFixed(2);
+                    document.getElementById(`written-percent-${i}`).textContent = `${percent}%`;
+                    writtenTotal += parseFloat(score);
+                    writtenMaxTotal += parseFloat(max);
+                } else {
+                    document.getElementById(`written-percent-${i}`).textContent = '0%';
+                }
+            }
+            const writtenAverage = writtenMaxTotal > 0 ? (writtenTotal / writtenMaxTotal * 100).toFixed(2) : '0';
+            document.getElementById('written-average').textContent = `${writtenAverage}%`;
+
+            // Calculate Performance Task average
+            let performanceTotal = 0, performanceMaxTotal = 0;
+            for (let i = 1; i <= performanceCount; i++) {
+                const max = document.getElementById(`performance-max-${i}`).value;
+                const score = document.getElementById(`performance-score-${i}`).value;
+                if (max && score) {
+                    const percent = (score / max * 100).toFixed(2);
+                    document.getElementById(`performance-percent-${i}`).textContent = `${percent}%`;
+                    performanceTotal += parseFloat(score);
+                    performanceMaxTotal += parseFloat(max);
+                } else {
+                    document.getElementById(`performance-percent-${i}`).textContent = '0%';
+                }
+            }
+            const performanceAverage = performanceMaxTotal > 0 ? (performanceTotal / performanceMaxTotal * 100).toFixed(2) : '0';
+            document.getElementById('performance-average').textContent = `${performanceAverage}%`;
+
+            // Calculate Exam average
+            const examMax = document.getElementById('exam-max').value;
+            const examScore = document.getElementById('exam-score').value;
+            const examAverage = examMax && examScore ? (examScore / examMax * 100).toFixed(2) : '0';
+            document.getElementById('exam-average').textContent = `${examAverage}%`;
+
+            // Get weights
+            const weightWritten = parseFloat(document.getElementById('weight-written').value) / 100;
+            const weightPerformance = parseFloat(document.getElementById('weight-performance').value) / 100;
+            const weightExam = parseFloat(document.getElementById('weight-exam').value) / 100;
+
+            // Calculate total average
+            const totalAverage = ((writtenAverage * weightWritten) + (performanceAverage * weightPerformance) + (examAverage * weightExam)).toFixed(2);
+            document.getElementById('total-average').textContent = `${totalAverage}%`;
+
+            // Determine transmuted grade
+            let transmutedGrade;
+            if (totalAverage >= 100) {
+                transmutedGrade = 100;
+            } else if (totalAverage >= 98.40 && totalAverage <= 99.99) {
+                transmutedGrade = 99;
+            } else if (totalAverage >= 96.80 && totalAverage <= 98.39) {
+                transmutedGrade = 98;
+            } else if (totalAverage >= 95.20 && totalAverage <= 96.79) {
+                transmutedGrade = 97;
+            } else if (totalAverage >= 93.60 && totalAverage <= 95.19) {
+                transmutedGrade = 96;
+            } else if (totalAverage >= 92.00 && totalAverage <= 93.59) {
+                transmutedGrade = 95;
+            } else if (totalAverage >= 90.40 && totalAverage <= 91.99) {
+                transmutedGrade = 94;
+            } else if (totalAverage >= 88.80 && totalAverage <= 90.39) {
+                transmutedGrade = 93;
+            } else if (totalAverage >= 87.20 && totalAverage <= 88.79) {
+                transmutedGrade = 92;
+            } else if (totalAverage >= 85.60 && totalAverage <= 87.19) {
+                transmutedGrade = 91;
+            } else if (totalAverage >= 84.00 && totalAverage <= 85.59) {
+                transmutedGrade = 90;
+            } else if (totalAverage >= 82.40 && totalAverage <= 83.99) {
+                transmutedGrade = 89;
+            } else if (totalAverage >= 80.80 && totalAverage <= 82.39) {
+                transmutedGrade = 88;
+            } else if (totalAverage >= 79.20 && totalAverage <= 80.79) {
+                transmutedGrade = 87;
+            } else if (totalAverage >= 77.60 && totalAverage <= 79.19) {
+                transmutedGrade = 86;
+            } else if (totalAverage >= 76.00 && totalAverage <= 77.59) {
+                transmutedGrade = 85;
+            } else if (totalAverage >= 74.40 && totalAverage <= 75.99) {
+                transmutedGrade = 84;
+            } else if (totalAverage >= 72.80 && totalAverage <= 74.39) {
+                transmutedGrade = 83;
+            } else if (totalAverage >= 71.20 && totalAverage <= 72.79) {
+                transmutedGrade = 82;
+            } else if (totalAverage >= 69.60 && totalAverage <= 71.19) {
+                transmutedGrade = 81;
+            } else if (totalAverage >= 68.00 && totalAverage <= 69.59) {
+                transmutedGrade = 80;
+            } else {
+                transmutedGrade = 0;
+            }
+            document.getElementById('transmuted-grade').textContent = transmutedGrade;
+        }
+
+        // Set initial event listeners
+        document.getElementById('add-written').addEventListener('click', addWrittenWork);
+        document.getElementById('add-performance').addEventListener('click', addPerformanceTask);
+    </script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>G.A Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        input { width: 100%; box-sizing: border-box; }
+        .header { background-color: #f2f2f2; font-weight: bold; }
+        .yellow-input { background-color: #ffff99; }
+        .calculated { background-color: #e6f2ff; }
+    </style>
+</head>
+<body>
+    <h1>General Average Calculator</h1>
+    <table>
+        <tr>
+            <th>subject</th>
+            <th>Enter Grade</th>
+            <th>Rounded Grade</th>
+        </tr>
+        <tr>
+            <td>GenPhysics</td>
+            <td><input type="number" step="0.1" min="0" max="100" class="yellow-input" id="grade1"></td>
+            <td class="calculated" id="rounded1"></td>
+        </tr>
+        <tr>
+            <td>GenBio</td>
+            <td><input type="number" step="0.1" min="0" max="100" class="yellow-input" id="grade2"></td>
+            <td class="calculated" id="rounded2"></td>
+        </tr>
+        <tr>
+            <td>Practical Research</td>
+            <td><input type="number" step="0.1" min="0" max="100" class="yellow-input" id="grade3"></td>
+            <td class="calculated" id="rounded3"></td>
+        </tr>
+        <tr>
+            <td>General Chemistry</td>
+            <td><input type="number" step="0.1" min="0" max="100" class="yellow-input" id="grade4"></td>
+            <td class="calculated" id="rounded4"></td>
+        </tr>
+        <tr>
+            <td>PERDEV</td>
+            <td><input type="number" step="0.1" min="0" max="100" class="yellow-input" id="grade5"></td>
+            <td class="calculated" id="rounded5"></td>
+        </tr>
+        <tr>
+            <td>Philosophy</td>
+            <td><input type="number" step="0.1" min="0" max="100" class="yellow-input" id="grade6"></td>
+            <td class="calculated" id="rounded6"></td>
+        </tr>
+        <tr>
+            <td>UCSP</td>
+            <td><input type="number" step="0.1" min="0" max="100" class="yellow-input" id="grade7"></td>
+            <td class="calculated" id="rounded7"></td>
+        </tr>
+        <tr>
+            <td>HOPE</td>
+            <td><input type="number" step="0.1" min="0" max="100" class="yellow-input" id="grade8"></td>
+            <td class="calculated" id="rounded8"></td>
+        </tr>
+        <tr>
+            <td>Pagsulat</td>
+            <td><input type="number" step="0.1" min="0" max="100" class="yellow-input" id="grade9"></td>
+            <td class="calculated" id="rounded9"></td>
+        </tr>
+        <tr>
+            <td colspan="2" class="header">Subjects Entered</td>
+            <td id="subjectsEntered"></td>
+        </tr>
+        <tr>
+            <td colspan="2" class="header">Total Grades</td>
+            <td id="totalGrades"></td>
+        </tr>
+        <tr>
+            <td colspan="2" class="header">General Average (Unrounded)</td>
+            <td id="averageUnrounded"></td>
+        </tr>
+        <tr>
+            <td colspan="2" class="header">General Average (Rounded)</td>
+            <td id="averageRounded"></td>
+        </tr>
+    </table>
+
+    <script>
+        // Get all input elements
+        const inputs = document.querySelectorAll('input');
+        
+        // Add event listener to each input
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', calculateGrades);
+        });
+
+        function calculateGrades() {
+            let validGrades = [];
+            let roundedGrades = [];
+
+            // Calculate rounded grades and collect valid grades
+            inputs.forEach((input, index) => {
+                const grade = parseFloat(input.value);
+                const roundedCell = document.getElementById(`rounded${index + 1}`);
+                
+                if (!isNaN(grade)) {
+                    validGrades.push(grade);
+                    
+                    // Round grade to nearest integer
+                    const roundedGrade = Math.round(grade);  // Rounds to the nearest integer
+                    roundedCell.textContent = roundedGrade;
+                    roundedGrades.push(roundedGrade);
+                } else {
+                    roundedCell.textContent = '';  // Keep blank if input is empty
+                }
+            });
+
+            // Calculate subjects entered
+            const subjectsEntered = validGrades.length;
+            document.getElementById('subjectsEntered').textContent = subjectsEntered;
+
+            // Calculate total grades
+            const totalGrades = validGrades.reduce((a, b) => a + b, 0);
+            document.getElementById('totalGrades').textContent = totalGrades.toFixed(2);
+
+            // Calculate unrounded average
+            const averageUnrounded = subjectsEntered > 0 ? totalGrades / subjectsEntered : 0;
+            document.getElementById('averageUnrounded').textContent = averageUnrounded.toFixed(2);
+
+            // Calculate rounded average
+            const averageRounded = Math.round(averageUnrounded);  // Round average to nearest integer
+            document.getElementById('averageRounded').textContent = averageRounded;
+        }
+    </script>
+</body>
+</html>
